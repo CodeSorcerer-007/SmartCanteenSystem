@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Display - Smart Canteen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #0f172a; color: #f8fafc; }
+        .kds-header {
+            background: #1e293b;
+            border-bottom: 3px solid #4f46e5;
+            padding: 1.2rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .kds-title { font-size: 1.5rem; font-weight: 800; color: #4f46e5; }
+        .kds-clock { font-size: 1.2rem; font-weight: 600; color: #94a3b8; }
+        .kds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+        .kds-card {
+            background: #1e293b;
+            border-radius: 16px;
+            border: 2px solid #334155;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .kds-card.status-pending { border-color: #f59e0b; }
+        .kds-card.status-preparing { border-color: #3b82f6; animation: kds-pulse 2s infinite; }
+        .kds-card.status-ready { border-color: #10b981; background: #064e3b22; }
+
+        @keyframes kds-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
+        }
+        .kds-order-num { font-size: 1.3rem; font-weight: 800; color: #f8fafc; margin-bottom: 0.5rem; }
+        .kds-item { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0; border-bottom: 1px solid #334155;
+            font-size: 1rem;
+        }
+        .kds-item:last-child { border-bottom: none; }
+        .kds-qty {
+            background: #4f46e5; color: white; padding: 0.2rem 0.6rem;
+            border-radius: 8px; font-weight: 800; font-size: 1rem; min-width: 36px; text-align: center;
+        }
+        .kds-meta { font-size: 0.8rem; color: #94a3b8; margin: 0.8rem 0; }
+        .kds-meta span { 
+            display: inline-block; background: #334155; padding: 0.2rem 0.6rem; 
+            border-radius: 6px; margin-right: 0.5rem; margin-bottom: 0.3rem;
+        }
+        .kds-actions { display: flex; gap: 0.75rem; margin-top: 1.2rem; }
+        .kds-btn {
+            flex: 1; padding: 0.8rem; border: none; border-radius: 10px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+        .btn-prepare { background: #3b82f6; color: white; }
+        .btn-prepare:hover { background: #2563eb; }
+        .btn-ready { background: #10b981; color: white; }
+        .btn-ready:hover { background: #059669; }
+        .btn-complete { background: #6366f1; color: white; }
+        .btn-complete:hover { background: #4f46e5; }
+        .kds-empty { 
+            text-align: center; padding: 4rem; color: #475569; 
+            grid-column: 1 / -1; font-size: 1.2rem;
+        }
+        .kds-badge {
+            display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        .badge-pending { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+        .badge-preparing { background: rgba(59,130,246,0.2); color: #3b82f6; border: 1px solid #3b82f6; }
+        .badge-ready { background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981; }
+        .kds-stat-bar {
+            background: #1e293b; padding: 0.8rem 2rem; display: flex; gap: 2rem;
+            border-bottom: 1px solid #334155; font-size: 0.9rem;
+        }
+        .kds-stat { color: #94a3b8; }
+        .kds-stat strong { color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+<div class="kds-header">
+    <div>
+        <div class="kds-title">🍳 Kitchen Display System</div>
+        <div style="font-size: 0.85rem; color: #64748b;">Smart Canteen — Active Orders</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div class="kds-clock" id="kds-clock">--:--:--</div>
+        <button class="btn outline" onclick="logout()" style="color: #94a3b8; border-color: #334155; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Logout</button>
+    </div>
+</div>
+
+<div class="kds-stat-bar">
+    <div class="kds-stat">Pending: <strong id="stat-pending">0</strong></div>
+    <div class="kds-stat">Preparing: <strong id="stat-preparing">0</strong></div>
+    <div class="kds-stat">Ready: <strong id="stat-ready">0</strong></div>
+    <div class="kds-stat" style="margin-left: auto; color: #10b981;">Auto-refreshes every 5s</div>
+</div>
+
+<div class="kds-grid" id="kds-grid">
+    <div class="kds-empty">⏳ Loading orders...</div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    const user = getUser();
+    if (!user || (user.role !== 'kitchen' && user.role !== 'admin')) {
+        alert('Unauthorized. Kitchen staff only.');
+        logout();
+    }
+
+    // Live clock
+    function updateClock() {
+        document.getElementById('kds-clock').innerText = new Date().toLocaleTimeString('en-IN');
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    async function loadKDS() {
+        try {
+            const orders = await apiCall('/orders/live');
+            const grid = document.getElementById('kds-grid');
+
+            // Update stat bar
+            document.getElementById('stat-pending').innerText = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('stat-preparing').innerText = orders.filter(o => o.status === 'preparing').length;
+            document.getElementById('stat-ready').innerText = orders.filter(o => o.status === 'ready').length;
+
+            if (orders.length === 0) {
+                grid.innerHTML = '<div class="kds-empty">✅ All clear! No active orders right now.</div>';
+                return;
+            }
+
+            // Sort: pending first, then preparing, then ready
+            const sorted = orders.sort((a, b) => {
+                const order = ['pending', 'preparing', 'ready'];
+                return order.indexOf(a.status) - order.indexOf(b.status);
+            });
+
+            grid.innerHTML = sorted.map(o => {
+                const badgeClass = `badge-${o.status}`;
+                const statusLabel = o.status.charAt(0).toUpperCase() + o.status.slice(1);
+
+                let actionBtns = '';
+                if (o.status === 'pending') {
+                    actionBtns = `<button class="kds-btn btn-prepare" onclick="updateStatus(${o.id}, 'preparing')">🍳 Start Preparing</button>`;
+                } else if (o.status === 'preparing') {
+                    actionBtns = `<button class="kds-btn btn-ready" onclick="updateStatus(${o.id}, 'ready')">✅ Mark Ready</button>`;
+                } else if (o.status === 'ready') {
+                    actionBtns = `<button class="kds-btn btn-complete" onclick="updateStatus(${o.id}, 'completed')">📦 Mark Collected</button>`;
+                }
+
+                const timeMins = Math.floor((Date.now() - new Date(o.created_at + 'Z')) / 60000);
+
+                return `
+                    <div class="kds-card status-${o.status}">
+                        <div class="kds-badge ${badgeClass}">${statusLabel}</div>
+                        <div class="kds-order-num">${o.order_number}</div>
+                        <div class="kds-meta">
+                            <span>👤 ${o.username}</span>
+                            <span>⏱️ ${timeMins}m ago</span>
+                            ${o.pickup_time ? `<span>🕐 ${o.pickup_time}</span>` : ''}
+                            ${o.special_instructions ? `<span>📝 ${o.special_instructions}</span>` : ''}
+                        </div>
+                        <div>
+                            ${o.items.map(i => `
+                                <div class="kds-item">
+                                    <span>${i[1]}</span>
+                                    <span class="kds-qty">×${i[0]}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="kds-actions">${actionBtns}</div>
+                    </div>
+                `;
+            }).join('');
+        } catch(e) {
+            console.error('KDS load failed', e);
+        }
+    }
+
+    async function updateStatus(orderId, newStatus) {
+        try {
+            await apiCall(`/orders/${orderId}/status`, 'PUT', { status: newStatus });
+            loadKDS();
+            showToast(`Order marked as ${newStatus}!`, 'success');
+        } catch(e) {
+            showToast('Failed to update status', 'error');
+        }
+    }
+
+    loadKDS();
+    setInterval(loadKDS, 5000);
+</script>
+</body>
+</html>

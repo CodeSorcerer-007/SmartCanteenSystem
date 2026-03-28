@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Canteen — Login</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="description" content="Smart Canteen — Pre-order your meals, skip the queue. Digital ordering for campus cafeterias.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        html, body { height: 100%; overflow: hidden; margin: 0; }
+
+        .auth-wrapper { display: flex; min-height: 100vh; }
+
+        /* ── Brand Panel ── */
+        .auth-brand {
+            flex: 1 1 55%;
+            background: linear-gradient(145deg, #312e81 0%, #4338ca 45%, #4f46e5 80%, #6366f1 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-brand::before {
+            content: '';
+            position: absolute;
+            width: 380px; height: 380px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+            top: -120px; right: -120px;
+        }
+
+        .auth-brand::after {
+            content: '';
+            position: absolute;
+            width: 280px; height: 280px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            bottom: -80px; left: -80px;
+        }
+
+        .brand-content { position: relative; z-index: 2; text-align: center; max-width: 440px; }
+
+        .brand-emoji {
+            display: block;
+            font-size: 5rem;
+            margin-bottom: 1.25rem;
+            animation: float 3.5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-14px); }
+        }
+
+        .brand-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
+        }
+
+        .brand-tag {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 2.75rem;
+        }
+
+        .brand-features { display: flex; flex-direction: column; gap: 0.9rem; text-align: left; }
+
+        .brand-feat {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.9rem 1.25rem;
+            border-radius: 12px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .brand-feat:nth-child(1) { animation-delay: 0.1s; }
+        .brand-feat:nth-child(2) { animation-delay: 0.2s; }
+        .brand-feat:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeUp { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
+
+        .feat-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+        .feat-text h4 { font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 0.2rem; }
+        .feat-text p  { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin: 0; }
+
+        .brand-foot {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0; right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.75rem;
+        }
+
+        /* ── Form Panel ── */
+        .auth-form {
+            flex: 0 0 420px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem 3rem;
+            overflow-y: auto;
+            box-shadow: -8px 0 30px rgba(0,0,0,0.08);
+        }
+
+        body.dark-mode .auth-form { background: #1e293b; }
+
+        .auth-form-box { width: 100%; max-width: 340px; }
+
+        .auth-tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 1.75rem;
+        }
+
+        body.dark-mode .auth-tabs { background: rgba(255,255,255,0.06); }
+
+        .auth-tab-btn {
+            flex: 1;
+            padding: 0.65rem;
+            border: none;
+            background: transparent;
+            border-radius: 7px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .auth-tab-btn.active {
+            background: white;
+            color: #4f46e5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        body.dark-mode .auth-tab-btn.active { background: #0f172a; }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .demo-btn {
+            padding: 0.55rem 0.5rem;
+            border-radius: 8px;
+            border: 1.5px solid;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .demo-btn:hover { transform: translateY(-1px); }
+        .demo-btn-admin  { background: #eef2ff; border-color: #c7d2fe; color: #4338ca; }
+        .demo-btn-kitchen { background: #ecfdf5; border-color: #6ee7b7; color: #059669; }
+        .demo-btn-student { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+
+        @media (max-width: 768px) {
+            .auth-brand { display: none; }
+            .auth-form { flex: 1; padding: 2rem 1.5rem; box-shadow: none; }
+            html, body { overflow: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+    <!-- ── Left Brand Panel ── -->
+    <div class="auth-brand">
+        <div class="brand-content">
+            <span class="brand-emoji">🍱</span>
+            <h1 class="brand-title">Smart<br>Canteen</h1>
+            <p class="brand-tag">Your campus, smarter. Skip the queue.</p>
+
+            <div class="brand-features">
+                <div class="brand-feat">
+                    <span class="feat-icon">⚡</span>
+                    <div class="feat-text">
+                        <h4>Instant Pre-Ordering</h4>
+                        <p>Place your order minutes before break time</p>
+                    </div>
+                </div>
+                <div class="brand-feat">
+                    <span class="feat-icon">📍</span>
+                    <div class="feat-text">
+                        <h4>Live Order Tracking</h4>
+                        <p>Watch your order go from kitchen to counter</p>
+                    </div>
+                </div>
+                <div class="brand-feat">
+                    <span class="feat-icon">💳</span>
+                    <div class="feat-text">
+                        <h4>Flexible Payments</h4>
+                        <p>Wallet, UPI, Card — your choice, every time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="brand-foot">© 2025 Smart Canteen · Transforming Campus Dining</div>
+    </div>
+
+    <!-- ── Right Form Panel ── -->
+    <div class="auth-form">
+        <div class="auth-form-box">
+
+            <!-- Logo -->
+            <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:2rem;">
+                <span style="font-size:1.8rem;">🍱</span>
+                <div>
+                    <div style="font-size:1.1rem; font-weight:800; color:#4f46e5; line-height:1;">Smart Canteen</div>
+                    <div style="font-size:0.7rem; color:#94a3b8; font-weight:500;">Campus Ordering Platform</div>
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <h2 id="form-heading" style="font-size:1.5rem; margin-bottom:0.3rem;">Welcome back</h2>
+            <p id="form-sub" style="color:#64748b; font-size:0.875rem; margin-bottom:1.5rem;">Sign in to start ordering</p>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+                <button class="auth-tab-btn" id="tab-register" onclick="switchTab('register')">New Account</button>
+            </div>
+
+            <!-- Form -->
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <label style="display:block; font-size:0.83rem; font-weight:600; color:#475569; margin-bottom:5px;">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+
+                <label style="display:block; font-size:0.83rem; font-weight:600; color:#475569; margin-bottom:5px;">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+
+                <div id="role-group" style="display:none;">
+                    <label style="display:block; font-size:0.83rem; font-weight:600; color:#475569; margin-bottom:5px;">Register as</label>
+                    <select id="role-select"><option value="student">Student</option></select>
+                </div>
+
+                <button type="submit" class="btn primary-btn w-100" id="auth-submit-btn" style="padding:0.85rem; font-size:0.95rem; margin-top:0.25rem;">
+                    <span id="btn-text">Sign In</span>
+                </button>
+                <p id="auth-error" class="error-msg"></p>
+            </form>
+
+            <!-- Demo Credentials -->
+            <div style="margin-top:1.75rem; padding-top:1.25rem; border-top:1px solid #e2e8f0;">
+                <p style="font-size:0.72rem; color:#94a3b8; text-align:center; margin-bottom:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Quick Demo Access</p>
+                <div class="demo-grid">
+                    <button class="demo-btn demo-btn-admin"   onclick="fillDemo('Admin','admin@123')">🛡️<br>Admin</button>
+                    <button class="demo-btn demo-btn-kitchen" onclick="fillDemo('Kitchen','kitchen@123')">🍳<br>Kitchen</button>
+                    <button class="demo-btn demo-btn-student" onclick="fillDemo('student1','pass123')">🎓<br>Student</button>
+                </div>
+            </div>
+
+            <p style="text-align:center; font-size:0.7rem; color:#cbd5e1; margin-top:1.5rem;">Smart Canteen Platform v2.0 · Demo Mode</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    let isLogin = true;
+
+    function switchTab(mode) {
+        isLogin = mode === 'login';
+        document.getElementById('tab-login').classList.toggle('active', isLogin);
+        document.getElementById('tab-register').classList.toggle('active', !isLogin);
+        document.getElementById('btn-text').innerText = isLogin ? 'Sign In' : 'Create Account';
+        document.getElementById('role-group').style.display = isLogin ? 'none' : 'block';
+        document.getElementById('auth-error').innerText = '';
+        document.getElementById('form-heading').innerText = isLogin ? 'Welcome back' : 'Create account';
+        document.getElementById('form-sub').innerText = isLogin ? 'Sign in to start ordering' : 'Join thousands of students ordering smarter';
+    }
+
+    function fillDemo(user, pass) {
+        document.getElementById('username').value = user;
+        document.getElementById('password').value = pass;
+        document.getElementById('username').focus();
+    }
+
+    async function handleAuth(e) {
+        e.preventDefault();
+        const btn = document.getElementById('auth-submit-btn');
+        const txt = document.getElementById('btn-text');
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const r = document.getElementById('role-select').value;
+
+        txt.innerText = 'Please wait…';
+        btn.disabled = true;
+
+        try {
+            const endpoint = isLogin ? '/auth/login' : '/auth/register';
+            const body = isLogin ? {username: u, password: p} : {username: u, password: p, role: r};
+            const res = await apiCall(endpoint, 'POST', body);
+
+            if (res.user) {
+                localStorage.setItem('canteen_user', JSON.stringify(res.user));
+                if      (res.user.role === 'admin')   window.location.href = 'admin.html';
+                else if (res.user.role === 'kitchen') window.location.href = 'kitchen.html';
+                else                                   window.location.href = 'student.html';
+            }
+        } catch (err) {
+            document.getElementById('auth-error').innerText = err.message;
+            txt.innerText = isLogin ? 'Sign In' : 'Create Account';
+            btn.disabled = false;
+        }
+    }
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered!'))
+                .catch(err => console.log('Service Worker failed!', err));
+        });
+    }
+</script>
+</body>
+</html>
