@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://smartcanteensystem-qc6f.onrender.com/"
+      "destination": "https://smartcanteensystem-qc6f.onrender.com/api/$1"
     }
   ]
 }
