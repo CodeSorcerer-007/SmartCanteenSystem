@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 import sqlite3
 from config import Config
+from db_setup import setup_database
 from routes.auth import auth_bp
 from routes.menu import menu_bp
 from routes.orders import orders_bp
@@ -9,6 +10,10 @@ from routes.interactions import interactions_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Ensure database exists
+setup_database()
+
 CORS(app)
 
 def get_db_connection():
