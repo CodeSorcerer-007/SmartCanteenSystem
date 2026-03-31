@@ -1,4 +1,7 @@
-const API_BASE = 'http://192.168.29.3:5001/api';
+const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+    ? 'http://192.168.29.3:5001/api' 
+    : '/api'; // On Vercel, we can proxy or use serverless functions at /api
+
 
 async function apiCall(endpoint, method = 'GET', body = null) {
     const options = {

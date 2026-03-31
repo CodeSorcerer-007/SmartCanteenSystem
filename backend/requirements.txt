@@ -1,5 +1,6 @@
 Flask
 Flask-CORS
+gunicorn
 mysql-connector-python
 scikit-learn
 numpy
